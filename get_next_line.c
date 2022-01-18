@@ -6,20 +6,84 @@
 /*   By: dpalacio <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 12:42:43 by dpalacio          #+#    #+#             */
-/*   Updated: 2022/01/17 19:43:05 by dpalacio         ###   ########.fr       */
+/*   Updated: 2022/01/18 12:38:20 by dpalacio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	get_next_line(const int fd, char **line)
+static int	save_line(char **placeholder, char **line)
+{
+	int i;
+	char *temp;
+
+	i = 0;
+	while ((*placeholder)[i] != '\n' && (*placeholder)[i] != '\0')
+		i++;
+	if ((*placeholder)[i] == '\n')
+	{
+		*line = ft_strsub((*placeholder), 0, i);
+		temp = ft_strdup(&((*placeholder)[i + 1]));
+		free(*placeholder);
+		*placeholder = temp;
+		if ((*placeholder)[0] == '\0')
+			ft_memdel((void **)placeholder);
+	}
+	else
+	{
+		*line = ft_strdup(*placeholder);
+		ft_memdel((void **)placeholder);
+	}
+
+	return (1);
+}
+
+static int	return_values(char **placeholder, ssize_t buff_len, char **line)
+{
+//	int i;
+//	char *temp;
+
+	if (buff_len == 0 && (*placeholder == NULL || !ft_strlen(*placeholder)))
+	{
+		ft_memdel((void **)placeholder);
+		return (0);
+	}
+	else if (buff_len < 0)
+	{
+		ft_memdel((void **)placeholder);
+		return (-1);
+	}
+	else
+		return (save_line(placeholder, line));
+/*	{
+		i = 0;
+		while ((*placeholder)[i] != '\n' && (*placeholder)[i] != '\0')
+			i++;
+		if ((*placeholder)[i] == '\n')
+		{
+			*line = ft_strsub((*placeholder), 0, i);
+			temp = ft_strdup(&((*placeholder)[i + 1]));
+			free(*placeholder);
+			*placeholder = temp;
+			if ((*placeholder)[0] == '\0')
+				ft_memdel((void **)placeholder);
+		}
+		else
+		{
+			*line = ft_strdup(*placeholder);
+			ft_memdel((void **)placeholder);
+		}
+	}
+	return (1);*/
+}
+
+int			get_next_line(const int fd, char **line)
 {
 	static char	*placeholder[FD_MAX];
 	char		buff[BUFF_SIZE + 1];
 	char		*temp;
 	ssize_t		buff_len;
-	int			i;
-
+//	int			i;
 	if (fd < 0 || fd > FD_MAX || !line)
 		return (-1);
 	buff_len = read(fd, buff, BUFF_SIZE);
@@ -38,7 +102,8 @@ int	get_next_line(const int fd, char **line)
 			break ;
 		buff_len = read(fd, buff, BUFF_SIZE);
 	}
-	if (buff_len == 0 && placeholder[fd] == NULL)
+	return (return_values(&placeholder[fd], buff_len, line));
+	/*if (buff_len == 0 && placeholder[fd] == NULL)
 	{
 		ft_memdel((void **)placeholder);
 		return (0);
@@ -68,5 +133,5 @@ int	get_next_line(const int fd, char **line)
 			ft_memdel((void **)&placeholder[fd]);
 		}
 		return (1);
-	}
+	}*/
 }
