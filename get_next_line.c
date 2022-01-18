@@ -6,13 +6,11 @@
 /*   By: dpalacio <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 12:42:43 by dpalacio          #+#    #+#             */
-/*   Updated: 2022/01/17 18:34:42 by dpalacio         ###   ########.fr       */
+/*   Updated: 2022/01/17 19:43:05 by dpalacio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-//ssize_t read(int fd, void *buf, size_t count);
-#include <stdio.h>
 
 int	get_next_line(const int fd, char **line)
 {
@@ -61,13 +59,14 @@ int	get_next_line(const int fd, char **line)
 			temp = ft_strdup(&((placeholder[fd])[i + 1]));
 			free(placeholder[fd]);
 			placeholder[fd] = temp;
+			if (placeholder[fd][0] == '\0')
+				ft_memdel((void **)&placeholder[fd]);
 		}
 		else
 		{
-			*line = placeholder[fd];
+			*line = ft_strdup(placeholder[fd]);
 			ft_memdel((void **)&placeholder[fd]);
 		}
-		printf("%s\n", *line);
 		return (1);
 	}
 }
